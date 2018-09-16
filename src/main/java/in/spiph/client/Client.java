@@ -5,8 +5,7 @@
  */
 package in.spiph.client;
 
-import in.spiph.client.servercom.ServerCom;
-import in.spiph.info.packets.base.TestPacket;
+import in.spiph.info.Page;
 import java.io.IOException;
 
 /**
@@ -15,7 +14,9 @@ import java.io.IOException;
  */
 public class Client {
 
-    public static String name = (int) (Math.random() * 1000000) + "C";
+    public static String name = "C" + (int) (Math.random() * 1000000) + "C";
+    
+    public static Page currentPage = null;
 
     public static void main(String[] args) {
         //FIX: s.sendPacket(APacket) no longer works after running s.initialize() //NOTE: s.initialize only ends when server closes. After the block, the code is unreachable until then.
@@ -30,6 +31,5 @@ public class Client {
             }
         });
         serverThread.start();
-        server.sendPacket(new TestPacket());
     }
 }
