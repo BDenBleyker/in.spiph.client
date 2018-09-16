@@ -23,7 +23,7 @@ import java.io.IOException;
  *
  * @author Bennett.DenBleyker
  */
-public class ServerCom {
+public class PacketClient {
 
     static final boolean SSL = System.getProperty("ssl") != null;
     static final String HOST = System.getProperty("host", "127.0.0.1");

@@ -22,7 +22,7 @@ public class PacketClientHandler extends PacketHandler {
     public PacketClientHandler(String from) {
         super(from);
     }
-    
+
     @Override
     public boolean handleException(Throwable cause) {
         if (cause.getMessage().equals("An existing connection was forcibly closed by the remote host")) {
@@ -32,7 +32,7 @@ public class PacketClientHandler extends PacketHandler {
         }
         return true;
     }
-    
+
     @Override
     public void handlePacket(ChannelPipeline pipeline, APacket packet) {
         switch (packet.getType()) {
@@ -43,22 +43,26 @@ public class PacketClientHandler extends PacketHandler {
                         break;
                     default:
                         System.out.println("Test Succeeds");
-                        pipeline.fireUserEventTriggered(new PagePacket(123456789));
+                        pipeline.fireUserEventTriggered(new PagePacket("bdbleyker@gmail.com"));
                 }
                 break;
             case 2: // PagePacket
-                Client.currentPage = (Page) packet.getData();
-                System.out.println("Page read: " + packet.toString());
-                pipeline.fireUserEventTriggered(new ErrorPacket("WEHRUHAFG"));
+                if (packet.getData() instanceof Page) {
+                    Client.changePage((Page) packet.getData());
+                    System.out.println("Page read: " + packet.toString());
+                    pipeline.fireUserEventTriggered(new ErrorPacket("WEHRUHAFG"));
+                } else {
+                    pipeline.fireUserEventTriggered(packet);
+                }
                 break;
             default: // ErrorPacket
                 System.out.println("Invalid packet id (" + packet.getType() + "): " + packet.toString());
         }
     }
-    
+
     @Override
     public boolean getTestMode() {
         return true;
     }
-    
+
 }
