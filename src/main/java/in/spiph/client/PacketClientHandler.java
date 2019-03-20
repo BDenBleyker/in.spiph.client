@@ -7,11 +7,12 @@ package in.spiph.client;
 
 import in.spiph.info.Page;
 import in.spiph.info.packets.base.APacket;
-import in.spiph.info.packets.base.ErrorPacket;
 import in.spiph.info.packets.base.TestPacket;
 import in.spiph.info.packets.client.PagePacket;
 import in.spiph.info.packets.handling.PacketHandler;
 import io.netty.channel.ChannelPipeline;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -26,7 +27,7 @@ public class PacketClientHandler extends PacketHandler {
     @Override
     public boolean handleException(Throwable cause) {
         if (cause.getMessage().equals("An existing connection was forcibly closed by the remote host")) {
-            System.out.println("\n\tServer closed");
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, "\n\tServer Closed");
         } else {
             return false;
         }
@@ -36,21 +37,16 @@ public class PacketClientHandler extends PacketHandler {
     @Override
     public void handlePacket(ChannelPipeline pipeline, APacket packet) {
         switch (packet.getType()) {
-            case 0: // TestPacket
-                switch (packet.getData().toString()) {
-                    case "Request":
-                        pipeline.fireUserEventTriggered(new TestPacket("Hello!"));
-                        break;
-                    default:
-                        System.out.println("Test Succeeds");
-                        pipeline.fireUserEventTriggered(new PagePacket("bdbleyker@gmail.com"));
+            case TestPacket.TYPE_VALUE:
+                if (packet.isRequest()) {
+                    pipeline.fireUserEventTriggered(new TestPacket("Hello!"));
+                } else {
+                    Logger.getLogger(Client.class.getName()).log(Level.INFO, "Test Succeeds");
                 }
                 break;
-            case 2: // PagePacket
+            case PagePacket.TYPE_VALUE:
                 if (packet.getData() instanceof Page) {
                     Client.changePage((Page) packet.getData());
-                    System.out.println("Page read: " + packet.toString());
-                    pipeline.fireUserEventTriggered(new ErrorPacket("WEHRUHAFG"));
                 } else {
                     pipeline.fireUserEventTriggered(packet);
                 }
